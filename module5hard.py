@@ -100,12 +100,19 @@ class UrTube:
                                 sleep(1)
                                 current_time += 1
                             print('Конец видео')
+                            break
+                    else:
+                        while current_time <= self.videos[i].duration:
+                            print(current_time, end=" ")
+                            sleep(1)
+                            current_time += 1
+                        print('Конец видео')
 
 
 ur = UrTube()
 v1 = Video('Лучший язык программирования 2024 года', 200)
 v2 = Video('Для чего девушкам парень программист?', 10, adult_mode=True)
-
+#v2 = Video('Для чего девушкам парень программист?', 10)
 # Добавление видео
 ur.add(v1, v2)
 

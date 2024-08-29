@@ -37,7 +37,7 @@ class UrTube:
     def __contains__(self, item):  # проверяем, если пользователь с таким ИМЕНЕМ существует
         if len(self.users) != 0:
             for i in range(0, len(self.users)):
-                if ur.users[i].nickname == item.nickname:
+                if self.users[i].nickname == item.nickname:
                     # print(f'Пользователь {item.nickname} уже существует!!!')
                     return True
                 else:
@@ -48,8 +48,8 @@ class UrTube:
 
         if len(self.users) != 0:
             for i in range(0, len(self.users)):
-                if ur.users[i].nickname == nickname and ur.users[i].password == hash(password):
-                    self.current_user = ur.users[i]
+                if self.users[i].nickname == nickname and self.users[i].password == hash(password):
+                    self.current_user = self.users[i]
                     # print(f'Пользователь {self.current_user.nickname} залогинился!!!')
                     return True
                 else:
@@ -57,24 +57,24 @@ class UrTube:
                     break
 
     def log_out(self):
-        current_user = None
+        self.current_user = None
 
     def register(self, nickname, password, age):  # регистрация пользователя с логином, паролем и возрастом
+        user = User(nickname, password, age)
         if len(self.users) == 0:
-            self.users.append(User(nickname, password, age))
-            self.current_user = User(nickname, password, age)
+            self.users.append(user)
+            self.current_user = user
         else:
-            if self.__contains__(User(nickname, password, age)):
+            if self.__contains__(user):
                 print(f'Пользователь {nickname} уже существует')
             else:
-                self.users.append(User(nickname, password, age))
-                self.current_user = User(nickname, password, age)
+                self.users.append(user)
+                self.current_user = user
 
-    def get_videos(self,
-                   search_string):  # ищем все видео, в названии которых встречается поисковая строка search string
+    def get_videos(self, search_string):  # ищем все видео, в названии которых встречается поисковая строка search string
         list_of_videos = []
         for i in range(0, len(self.videos)):
-            if str.upper(search_string) in str.upper(self.videos[i].title):
+            if search_string.upper() in str.upper(self.videos[i].title):
                 list_of_videos.append(self.videos[i].title)
         return list_of_videos
 
@@ -85,28 +85,27 @@ class UrTube:
 
     def watch_video(self, video_title: str):
 
-        if self.current_user == None:
+        if self.current_user is None:
             print('Войдите в аккаунт, чтобы смотреть видео')
         else:
             for i in range(0, len(self.videos)):
                 if self.videos[i].title == video_title:
                     current_time = self.videos[i].time_now
-                    if self.videos[i].adult_mode == True:
+                    if self.videos[i].adult_mode:
                         if self.current_user.age < 18:
                             print('Вам нет 18 лет, пожалуйста, покиньте страницу')
                         else:
-                            while current_time <= self.videos[i].duration:
-                                print(current_time, end=" ")
-                                sleep(1)
-                                current_time += 1
-                            print('Конец видео')
+                            self.__watch_video(current_time, i)
                             break
                     else:
-                        while current_time <= self.videos[i].duration:
-                            print(current_time, end=" ")
-                            sleep(1)
-                            current_time += 1
-                        print('Конец видео')
+                        self.__watch_video(current_time, i)
+
+    def __watch_video(self, current_time, i):
+        while current_time <= self.videos[i].duration:
+            print(current_time, end=" ")
+            sleep(1)
+            current_time += 1
+        print('Конец видео')
 
 
 ur = UrTube()
